@@ -1,43 +1,49 @@
 using SalaryApp;
-using System;
-using System.Collections;
+using System; 
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine; 
 using TMPro;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
-{
-    public static UIManager Instance { get; private set; }
+{ 
 
-    [SerializeField] private TMP_InputField _inputFieldName, _inputFieldID; 
-    [SerializeField] private TMP_Dropdown _dropDownDepartment, _dropDownSeniority; 
+    [SerializeField] private TMP_InputField _inputFieldName, _inputFieldID;
+    [SerializeField] private TMP_Dropdown _dropDownPosition;
+    [SerializeField] private Table _table;
+    [SerializeField] private EmployeeManager _employeeMgr;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        } 
-        Instance = this; 
-    }
+    private int _currentPosition;
 
     private void Start()
     {
-        _dropDownDepartment.AddOptions(Enum.GetNames(typeof(Department)).ToList());
-        _dropDownSeniority.AddOptions(Enum.GetNames(typeof(Seniority)).ToList());
+        _dropDownPosition.AddOptions(_employeeMgr.Positions.Select(x => x.Department + " - " + x.Seniority).ToList());
     }
+     
     public void AddEmployee()
     { 
         Employee employee = new Employee();
 
-        employee.ID = Convert.ToInt64(_inputFieldID.text);
+        employee.ID = Convert.ToInt64(_inputFieldID.text); 
         employee.Name = _inputFieldName.text;
-        employee.Department = _dropDownDepartment.options[_dropDownDepartment.value].text;
-        employee.Seniority = _dropDownSeniority.options[_dropDownSeniority.value].text;
+        employee.PosID = _dropDownPosition.value + 1;
 
-        EmployeeManager.Instance.DB.InsertData<Employee>(new List<Employee> { employee }, true, "Employee");
+        _employeeMgr.DB.InsertData<Employee>(new List<Employee> { employee }, true, Employee.GetDBProperties(),"Employee");
     }
+
+    [ContextMenu("Update Employee Table")]
+    public void UpdateEmployeeTable()
+       => _table.UpdateTable<Employee>(_employeeMgr.Employees, new string[] { "PosID"});
+
+    [ContextMenu("Update Salary Table")]
+    public void UpdateSalaryTable()
+        => _table.UpdateTable<Salary>(_employeeMgr.Salaries);
+    [ContextMenu("Update Raise Table")]
+    public void UpdateRaiseTable()
+        => _table.UpdateTable<Raise>(_employeeMgr.Raises);
+
+    [ContextMenu("Clear table")]
+    public void ClearTable()
+        => _table.DeleteTableElements();
 }

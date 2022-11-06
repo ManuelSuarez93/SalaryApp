@@ -33,6 +33,7 @@ namespace SalaryApp
                 command = connection.CreateCommand();
                 command.CommandText = commandText;
                 command.ExecuteNonQuery();
+                command.Dispose();
                 connection.Close();
             }
         }
@@ -43,15 +44,19 @@ namespace SalaryApp
             { 
                 connection.Open();
                 command.Connection = connection;
-                command.ExecuteNonQuery();  
+                command.ExecuteNonQuery();
+                command.Dispose();
                 connection.Close();
             }
         }
+
         public void DeleteDatabase()
-        {
-            if ((File.Exists(DBPath)))
+        { 
+            if (IsDatabaseActive())
                 File.Delete(DBPath);
-        } 
+        }
+
+        public bool IsDatabaseActive() => File.Exists(DBPath);
         public List<T> LoadData<T>(string tableName = "" )
         {
             Type temp = typeof(T); 
@@ -74,11 +79,13 @@ namespace SalaryApp
                 dt.Load(reader);
                 TransformDTToType<T>(data, dt, temp);
 
+                command.Dispose();
+                reader.Dispose();
                 connection.Close(); 
             } 
             return data.Cast<T>().ToList();
         } 
-        private void TransformDTToType<T>(List<IDatabaseObject> data, DataTable dt, Type temp)
+        public void TransformDTToType<T>(List<IDatabaseObject> data, DataTable dt, Type temp)
         {
             foreach (DataRow row in dt.Rows)
             {
@@ -99,11 +106,14 @@ namespace SalaryApp
             }
         }
 
-        public void InsertData<T>(List<T> newData, bool replace = false, string tableName = "")
+        public void InsertData<T>(List<T> newData, bool replace = false,List<PropertyInfo> properties = null, string tableName = "")
         {
             SqliteCommand cmd = new SqliteCommand();
             Type temp = typeof(T);
-            PropertyInfo[] properties = temp.GetProperties();
+
+            if (properties == null)
+                properties = temp.GetProperties().ToList();
+             
             if (string.IsNullOrWhiteSpace(tableName))
                 tableName = temp.Name;
 
@@ -111,17 +121,17 @@ namespace SalaryApp
 
             string tables = "";
             string values = "";
-            for (int i = 0; i < properties.Length; i++)
+            for (int i = 0; i < properties.Count(); i++)
             {
-                tables += $"{properties[i].Name}" + (i == properties.Length - 1 ? "" : ",");
-                values += $"@value{i}" + (i == properties.Length - 1 ? "" : ",");
+                tables += $"{properties[i].Name}" + (i == properties.Count() - 1 ? "" : ",");
+                values += $"@value{i}" + (i == properties.Count() - 1 ? "" : ",");
             }
 
             insert += $"({tables}) VALUES({values})";
             foreach(T item in newData)
             { 
                 cmd.CommandText = insert;
-                for (int i = 0; i < properties.Length; i++) 
+                for (int i = 0; i < properties.Count(); i++) 
                     cmd.Parameters.AddWithValue($"@value{i}", properties[i].GetValue(item));  
 
                 ExecuteNonQuery(cmd);
