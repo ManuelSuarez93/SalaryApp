@@ -1,0 +1,13 @@
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(1,'hr', 'junior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(2,'hr', 'semisenior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(3,'hr', 'senior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(4,'engineer', 'junior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(5,'engineer', 'semisenior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(6,'engineer', 'senior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(7,'artist', 'semisenior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(8,'artist', 'senior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(9,'design', 'junior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(10,'design', 'senior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(11,'pm', 'semisenior'); 
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(12,'pm', 'senior');
+INSERT OR REPLACE INTO POSITION(id, department, seniority) VALUES(13,'ceo', 'ceo');

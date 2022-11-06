@@ -45,6 +45,9 @@ namespace SalaryApp
                 elements.Add(newRow);
             }
 
+            
+            row = Instantiate(_row, transform);
+
         }
 
         public void DeleteTableElements()

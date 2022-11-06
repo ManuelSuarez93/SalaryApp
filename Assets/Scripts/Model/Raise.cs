@@ -16,7 +16,7 @@ namespace SalaryApp
 
         public long ID { get => _id; set => _id = value;}
     
-        public long Posid { get => _posid; set => _posid = value; }
+        public long PosID { get => _posid; set => _posid = value; }
         
         public double Amount { get => _amount; set => _amount = value; }
         

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace SalaryApp
 {
+#if UNITY_EDITOR
     [CustomEditor(typeof(EmployeeManager))]
     public partial class EmployeeManagerEditor : Editor
     {
@@ -28,9 +29,16 @@ namespace SalaryApp
                 script.ApplyAllRaises();
             if (GUILayout.Button("Update Employee Salary"))
                 script.UpdateEmployeeSalary();
+            if (GUILayout.Button("Update Employee Position Data"))
+                script.UpdateEmployeePosition();
             if (GUILayout.Button("Insert Salary Data"))
                 script.InsertSalaryDataIntoDatabase();
 
+            if (GUILayout.Button("Clear Data"))
+                script.ClearData();
+
+
         }
     }
+#endif
 }   

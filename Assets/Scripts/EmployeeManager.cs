@@ -7,12 +7,12 @@ namespace SalaryApp
 {
     public class EmployeeManager : MonoBehaviour
     {
-        [Header("Tables")]
+        [Header("TABLES")]
         [SerializeField] private List<Employee> _employees = new List<Employee>();
         [SerializeField] private List<Salary> _salaries = new List<Salary>();
         [SerializeField] private List<Raise> _raises = new List<Raise>();
         [SerializeField] private List<Position> _positions = new List<Position>();
-        [SerializeField] private Table _table;
+        [Header("SETTINGS")]
         [SerializeField] private bool _initializeOnStart = true;
         [SerializeField] private bool _replaceDatabaseOnInit = false;
         [SerializeField] private bool _roundSalaries = true;
@@ -38,7 +38,7 @@ namespace SalaryApp
                 DB.ExecuteNonQuery(SQL.DROP_TABLE_QUERY);
                 DB.ExecuteNonQuery(SQL.CREATE_TABLE_QUERY);
                 DB.ExecuteNonQuery(SQL.POSITION_INSERT_DATA);
-                DB.ExecuteNonQuery(Resources.Load<TextAsset>("EmployeeInsertData").text);
+                DB.ExecuteNonQuery(SQL.EMPLOYEE_INSERT_DATA);
                 DB.ExecuteNonQuery(SQL.SALARY_INSERT_DATA);
                 DB.ExecuteNonQuery(SQL.RAISE_INSERT_DATA);
             }
@@ -49,9 +49,6 @@ namespace SalaryApp
             LoadEmployeeData();
         }
 
-
-        public void UpdateTable<T>(List<T> list)
-            => _table.UpdateTable<T>(list);
 
         [ContextMenu("Load Employee Data")]
         public void LoadEmployeeData()
@@ -64,11 +61,27 @@ namespace SalaryApp
 
         [ContextMenu("Load Salary Data")]
         public void LoadSalaryData()
-            => _salaries = DB.LoadData<Salary>();
+        {
+            _salaries = DB.LoadData<Salary>();
+            foreach (Salary salary in _salaries)
+            {
+                Position pos = _positions.FirstOrDefault(y => y.ID == salary.PosID);
+                salary.Department = pos.Department;
+                salary.Seniority = pos.Seniority;
+            }
+        }
 
         [ContextMenu("Load Raise Data")]
         public void LoadRaiseData()
-            => _raises = DB.LoadData<Raise>();
+        {
+             _raises = DB.LoadData<Raise>();
+            foreach (Raise raise in _raises)
+            {
+                Position pos = _positions.FirstOrDefault(y => y.ID == raise.PosID);
+                raise.Department = pos.Department;
+                raise.Seniority = pos.Seniority;
+            }
+        }
 
         [ContextMenu(" Load Position Data")]
         public void LoadPositionData()
@@ -114,7 +127,7 @@ namespace SalaryApp
             {
                 sal.Amount +=  (sal.Amount *
                     (_raises.FirstOrDefault(
-                        x => x.Posid == sal.PosID)
+                        x => x.PosID == sal.PosID)
                         .Amount / 100));
 
                 if (_roundSalaries)

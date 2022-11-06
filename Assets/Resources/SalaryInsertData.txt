@@ -1,0 +1,13 @@
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(1, 500); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(2, 1000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(3, 1500); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(4, 1500); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(5, 3000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(6, 5000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(7, 1200); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(8, 2000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(9, 800); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(10, 2000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(11, 2400); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(12, 4000); 
+INSERT OR REPLACE INTO Salary(posid,amount) VALUES(13, 20000);
