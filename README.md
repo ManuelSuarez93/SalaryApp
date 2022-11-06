@@ -3,7 +3,7 @@
  This is an app that calculates the salary raises by positions in a company. It uses Unity for the application and SQLite to store the data.
  
  This is the main menu:
- ![image]https://github.com/ManuelSuarez93/SalaryApp/blob/main/Screenshot.JPG
+ ![image](https://github.com/ManuelSuarez93/SalaryApp/blob/main/Screenshot.JPG)
  
  Main table view:
  - On the Table title it shows the currently loaded table
