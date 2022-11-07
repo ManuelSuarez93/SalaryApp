@@ -22,7 +22,7 @@ namespace SalaryApp.Test
             public long ID { get => _id; set => _id = value; }
         } 
 
-        static int[] values = new int[]
+        static int[] employeeAmount = new int[]
         {
             1, 100, 200, 300, 500
         };
@@ -62,26 +62,42 @@ namespace SalaryApp.Test
 
         };
 
+        static List<Salary> salariesWithRaise =
+            new List<Salary>
+            {
+                new Salary { PosID = 1, Department = "HR", Seniority ="Junior", Amount= 502.5f},
+                new Salary { PosID = 2, Department = "HR", Seniority ="SemiSenior", Amount= 1020f},
+                new Salary { PosID = 3, Department = "HR", Seniority ="Senior", Amount= 1575f},
+                new Salary { PosID = 4, Department = "Engineering", Seniority ="Junior", Amount= 1575f},
+                new Salary { PosID = 5, Department = "Engineering", Seniority ="SemiSenior", Amount= 3210f},
+                new Salary { PosID = 6, Department = "Engineering", Seniority ="Senior", Amount= 5500f},
+                new Salary { PosID = 7, Department = "Artist", Seniority ="SemiSenior", Amount= 1230f},
+                new Salary { PosID = 8, Department = "Artist", Seniority ="Senior", Amount= 2100f},
+                new Salary { PosID = 9, Department = "Design", Seniority ="Junior", Amount= 832f},
+                new Salary { PosID = 10, Department = "Design", Seniority ="Senior", Amount= 2140f},
+                new Salary { PosID = 11, Department = "PM", Seniority ="SemiSenior", Amount= 2520f},
+                new Salary { PosID = 12, Department = "PM", Seniority ="Senior", Amount= 4400f},
+                new Salary { PosID = 13, Department = "CEO", Seniority ="CEO", Amount= 40000f}
+            };
+
         #endregion
 
-        [UnityTest, Order(1)]
+        [UnityTest]
         public IEnumerator Create_Database_And_Check_If_CorrectlyAdded()
-        {
-            //Arrange
+        { 
             yield return Helpers.LoadTestScene();
             EmployeeManager EmployeeMgr = Helpers.GetTestEmployeeManager();
-
-            //Act
+             
             EmployeeMgr.DB.ExecuteNonQuery(SQL.CREATE_TABLE_QUERY);
-
-            //Assert
+              
             Assert.IsTrue(File.Exists(EmployeeMgr.DB.DBPath));
+            
             yield return null;
         }
 
          
-        [UnityTest, Order(3)]
-        public IEnumerator Create_New_DatabaseObject_Save_And_Check_If_Exists([ValueSource("values")] int amount)
+        [UnityTest]
+        public IEnumerator Create_New_DatabaseObject_Save_And_Check_If_Exists([ValueSource("employeeAmount")] int amount)
         {
             yield return Helpers.LoadTestScene();
             EmployeeManager EmployeeMgr = Helpers.GetTestEmployeeManager();
@@ -101,7 +117,7 @@ namespace SalaryApp.Test
             yield return null;
         }
 
-        [UnityTest, Order(4)]
+        [UnityTest]
         public IEnumerator Create_Employee_Database_And_Then_Load_Data_And_Check_If_Correct([ValueSource("employees")] List<Employee> employees)
         {
 
@@ -111,7 +127,7 @@ namespace SalaryApp.Test
             EmployeeMgr.DB.ExecuteNonQuery(SQL.CREATE_TABLE_QUERY);
             EmployeeMgr.DB.ExecuteNonQuery(SQL.SALARY_INSERT_DATA);
             EmployeeMgr.DB.ExecuteNonQuery(SQL.RAISE_INSERT_DATA);
-             
+            
             List<PropertyInfo> properties = Employee.GetDBProperties();
             EmployeeMgr.DB.InsertData<Employee>(employees, true,  properties , "Employee");
             var newEmployeeData = EmployeeMgr.DB.LoadData<Employee>();
@@ -145,16 +161,35 @@ namespace SalaryApp.Test
             yield return null;
         }
 
-        [UnityTest, Order(2)]
+        [UnityTest]
         public IEnumerator Get_Employee_Data_From_Database()
         { 
             yield return Helpers.LoadTestScene();
             EmployeeManager EmployeeMgr = Helpers.GetTestEmployeeManager();
-             
-            EmployeeMgr.DB.ExecuteNonQuery(SQL.CREATE_TABLE_QUERY);
-            EmployeeMgr.DB.ExecuteNonQuery(SQL.EMPLOYEE_INSERT_DATA);
-             
+
+            EmployeeMgr.InitializeDatabase();
+
+            EmployeeMgr.ApplyAllRaises();
+            List<Salary> newSalaries = EmployeeMgr.Salaries;
+
+            bool isCorrect = true;
+            foreach(Salary testSalary in salariesWithRaise)
+            {
+                Salary s = newSalaries.FirstOrDefault(x => x.ID == testSalary.ID);
+                if (s != null)
+                {
+                    isCorrect =
+                        s.Seniority == testSalary.Seniority &&
+                        s.Department == testSalary.Department &&
+                        s.Amount == s.Amount;
+
+                    if (!isCorrect)
+                        break;
+                }
+            }
+
             Assert.AreEqual(251, EmployeeMgr.DB.LoadData<Employee>().Count);
+            Assert.IsTrue(isCorrect);
 
             yield return null;
         }
